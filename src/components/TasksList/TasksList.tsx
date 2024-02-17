@@ -310,10 +310,14 @@ const TasksList = (props: TasksListProps) => {
         return true;
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (dx > 50) {
+        if (dx > 150) {
           handleOnDeleteTask(taskDetails, true);
         }
-        AnimatedValue.setValue(0);
+        Animated.timing(AnimatedValue, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true
+        }).start();
       },
     });
   };
