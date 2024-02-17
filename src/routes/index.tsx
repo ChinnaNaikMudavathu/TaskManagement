@@ -26,6 +26,7 @@ const MainStackNavigation = () => {
               fontFamily: 'Manrope-SemiBold',
               fontSize: 20,
             },
+            animation: 'slide_from_right',
             headerRight: () => (
               <TouchableOpacity
                 style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}
@@ -50,6 +51,7 @@ const MainStackNavigation = () => {
                 fontFamily: 'Manrope-SemiBold',
                 fontSize: 20,
               },
+              animation: 'slide_from_right',
               headerRight: () =>
                 isEditTask ? (
                   <TouchableOpacity onPress={handleOnDeleteTask}>
