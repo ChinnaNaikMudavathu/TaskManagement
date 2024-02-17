@@ -273,7 +273,7 @@ const TasksList = (props: TasksListProps) => {
     });
   }, []);
 
-  const renderTask = ({item}) => {
+  const renderTask = ({item}: {item: TaskDetails, index: number}) => {
     const {
       id,
       TaskTitle,
