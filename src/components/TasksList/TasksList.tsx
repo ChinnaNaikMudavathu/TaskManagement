@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Alert, Animated, FlatList, PanResponder, View} from 'react-native';
 
 import TaskCard from '../TaskCard';
 
@@ -8,7 +8,7 @@ import {TasksListProps} from '../../Models/TasksList.Models';
 import TasksListStyles from './TasksList.styles';
 import {TASK_STATUS, TASK_STATUS_LABEL} from '../../Constants/App';
 import NavigationScreens from '../../Constants/NavigationScreens';
-import { TaskDetails } from '../../Models/TaskCreation.Models';
+import {TaskDetails} from '../../Models/TaskCreation.Models';
 
 const DUMMY_TASKS = [
   {
@@ -20,8 +20,8 @@ const DUMMY_TASKS = [
     TaskCreationDate: '01/20',
     TaskStatus: {
       label: TASK_STATUS_LABEL.ReadyToStart,
-      value: TASK_STATUS.ReadyToStart
-    }
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '2',
@@ -29,11 +29,11 @@ const DUMMY_TASKS = [
       '2 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '2 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.InProgress,
-        value: TASK_STATUS.InProgress
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.InProgress,
+      value: TASK_STATUS.InProgress,
+    },
   },
   {
     id: '3',
@@ -41,11 +41,11 @@ const DUMMY_TASKS = [
       '3 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '3 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.InReview,
-        value: TASK_STATUS.InReview
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.InReview,
+      value: TASK_STATUS.InReview,
+    },
   },
   {
     id: '4',
@@ -53,11 +53,11 @@ const DUMMY_TASKS = [
       '4 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '4 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.OnHold,
-        value: TASK_STATUS.OnHold
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.OnHold,
+      value: TASK_STATUS.OnHold,
+    },
   },
   {
     id: '5',
@@ -65,11 +65,11 @@ const DUMMY_TASKS = [
       '5 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '5 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.Block,
-        value: TASK_STATUS.Block
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.Block,
+      value: TASK_STATUS.Block,
+    },
   },
   {
     id: '6',
@@ -77,11 +77,11 @@ const DUMMY_TASKS = [
       '6 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '6 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
+    TaskCreationDate: '01/20',
     TaskStatus: {
       label: TASK_STATUS_LABEL.Close,
-      value: TASK_STATUS.Close
-    }
+      value: TASK_STATUS.Close,
+    },
   },
   {
     id: '7',
@@ -89,11 +89,11 @@ const DUMMY_TASKS = [
       '7 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '7 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.Complete,
-        value: TASK_STATUS.Complete
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.Complete,
+      value: TASK_STATUS.Complete,
+    },
   },
   {
     id: '8',
@@ -101,11 +101,11 @@ const DUMMY_TASKS = [
       '8 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '8 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '9',
@@ -113,11 +113,11 @@ const DUMMY_TASKS = [
       '9 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '9 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '10',
@@ -125,11 +125,11 @@ const DUMMY_TASKS = [
       '10 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '10 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '11',
@@ -137,11 +137,11 @@ const DUMMY_TASKS = [
       '11 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '11 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '12',
@@ -149,11 +149,11 @@ const DUMMY_TASKS = [
       '12 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '12 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '13',
@@ -161,11 +161,11 @@ const DUMMY_TASKS = [
       '13 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '13 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
+    TaskCreationDate: '01/20',
     TaskStatus: {
       label: TASK_STATUS_LABEL.ReadyToStart,
-      value: TASK_STATUS.ReadyToStart
-    }
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '14',
@@ -173,11 +173,11 @@ const DUMMY_TASKS = [
       '14 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '14 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '15',
@@ -185,11 +185,11 @@ const DUMMY_TASKS = [
       '15 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '15 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
+    TaskCreationDate: '01/20',
     TaskStatus: {
       label: TASK_STATUS_LABEL.ReadyToStart,
-      value: TASK_STATUS.ReadyToStart
-    }
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '16',
@@ -197,11 +197,11 @@ const DUMMY_TASKS = [
       '16 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '16 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '17',
@@ -209,11 +209,11 @@ const DUMMY_TASKS = [
       '17 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '17 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '18',
@@ -221,11 +221,11 @@ const DUMMY_TASKS = [
       '18 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '18 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '19',
@@ -233,11 +233,11 @@ const DUMMY_TASKS = [
       '19 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '19 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
   {
     id: '20',
@@ -245,25 +245,43 @@ const DUMMY_TASKS = [
       '20 Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title Title',
     TaskDescription:
       '20 Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description',
-      TaskCreationDate: '01/20',
-      TaskStatus: {
-        label: TASK_STATUS_LABEL.ReadyToStart,
-        value: TASK_STATUS.ReadyToStart
-      }
+    TaskCreationDate: '01/20',
+    TaskStatus: {
+      label: TASK_STATUS_LABEL.ReadyToStart,
+      value: TASK_STATUS.ReadyToStart,
+    },
   },
 ];
 
 const TasksList = (props: TasksListProps) => {
   const {navigation} = props || {};
   const [tasks, setTasks] = useState([]);
-
+  const AnimatedValue = useRef(new Animated.Value(0)).current;
+  const [currentSwipingTaskId, setCurrentSwipingTaskId] = useState('');
   useEffect(() => {
     setTasks(DUMMY_TASKS);
   }, []);
 
-  const handleOnDeleteTask = useCallback(() => {
-    navigation.goBack();
-  }, []);
+  const handleOnDeleteTask = useCallback(
+    (taskDetails: TaskDetails, isSwipeDelete: boolean) => {
+      Alert.alert('Delete Task', 'Are you sure to delete the task', [
+        {
+          text: 'No',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            if (!isSwipeDelete) {
+              navigation.goBack();
+            }
+          },
+        },
+      ]);
+    },
+    [navigation],
+  );
 
   const handleOnPressTask = useCallback((taskDetails: TaskDetails) => {
     navigation.navigate(NavigationScreens.TaskCreation, {
@@ -273,16 +291,48 @@ const TasksList = (props: TasksListProps) => {
     });
   }, []);
 
-  const renderTask = ({item}: {item: TaskDetails, index: number}) => {
-    const {
-      id,
-      TaskTitle,
-      TaskDescription,
-      TaskStatus,
-      TaskCreationDate,
-    } = item || {};
+  const panResponder = (taskDetails: TaskDetails) => {
+    let dx = 0;
+
+    return PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gestureState) => {
+        setCurrentSwipingTaskId(taskDetails.id);
+        dx = gestureState.dx;
+        if (dx > 0) {
+          AnimatedValue.setValue(dx);
+        }
+      },
+      onMoveShouldSetPanResponder: (_, gesture) => {
+        if (gesture?.moveX > gesture?.moveY) {
+          return false;
+        }
+        return true;
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (dx > 50) {
+          handleOnDeleteTask(taskDetails, true);
+        }
+        AnimatedValue.setValue(0);
+      },
+    });
+  };
+
+  const renderTask = ({item}: {item: TaskDetails; index: number}) => {
+    const {id, TaskTitle, TaskDescription, TaskStatus, TaskCreationDate} =
+      item || {};
     return (
-      <View key={id} style={TasksListStyles.TasksCardWrapper}>
+      <Animated.View
+        {...panResponder(item).panHandlers}
+        key={id}
+        style={[
+          TasksListStyles.TasksCardWrapper,
+          {
+            ...(currentSwipingTaskId === id
+              ? {transform: [{translateX: AnimatedValue}]}
+              : {}),
+          },
+        ]}>
         <TaskCard
           TaskTitle={TaskTitle}
           TaskDescription={TaskDescription}
@@ -290,7 +340,7 @@ const TasksList = (props: TasksListProps) => {
           TaskCreationDate={TaskCreationDate}
           handleOnPressTask={() => handleOnPressTask(item)}
         />
-      </View>
+      </Animated.View>
     );
   };
   return (

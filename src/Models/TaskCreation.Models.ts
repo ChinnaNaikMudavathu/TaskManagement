@@ -7,7 +7,6 @@ export interface TaskDetails {
   TaskDescription: string;
   TaskStatus: TaskStatus;
   TaskCreationDate: string;
-  taskStatusType: string;
 }
 interface TaskCreationRouteParams {
   isEditTask?: boolean;

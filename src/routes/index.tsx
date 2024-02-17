@@ -43,7 +43,7 @@ const MainStackNavigation = () => {
           name={NavigationScreens.TaskCreation}
           component={TaskCreation}
           options={({route}) => {
-            const {isEditTask = false, handleOnDeleteTask = () => {}} =
+            const {isEditTask = false, handleOnDeleteTask = () => {}, taskDetails = {}} =
               route?.params ?? {};
             return {
               headerTitle: isEditTask ? 'Update Task' : 'Create Task',
@@ -54,7 +54,7 @@ const MainStackNavigation = () => {
               animation: 'slide_from_right',
               headerRight: () =>
                 isEditTask ? (
-                  <TouchableOpacity onPress={handleOnDeleteTask}>
+                  <TouchableOpacity onPress={() => handleOnDeleteTask(taskDetails)}>
                     <Image
                       style={{width: 20, height: 20}}
                       source={DeleteIcon}
