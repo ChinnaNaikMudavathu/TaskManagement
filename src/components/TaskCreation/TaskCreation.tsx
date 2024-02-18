@@ -1,5 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import {
+  ActivityIndicator,
   Keyboard,
   Text,
   TouchableOpacity,
@@ -7,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import {AsyncStorage, AsyncStorageKeys} from '../../AsyncStorage';
+import Colors from '../../Constants/Colors';
 import {TaskStatus} from '../../Models/Common.Models';
 
 import {
@@ -36,43 +38,60 @@ const TaskCreation = (props: TaskCreationProps) => {
       description: '',
       taskStatus: '',
     });
+  const [isAddTaskLoading, setIsAddTaskLoading] = useState(false);
   const handleOnPressSaveTaskDetails = useCallback(() => {
-    const {taskDetailsErrors, isErrorOccurred} = isValidTaskDetails({
-      title: taskTitle?.trim(),
-      description: taskDescription?.trim(),
-      taskStatus: selectedTaskStatus?.value?.trim(),
-    });
-    if (isErrorOccurred) {
-      setTaskDetailsError(taskDetailsErrors);
-    } else {
-      const date = new Date();
-      const timestamp = date.getUTCMilliseconds();
-      const newTaskDetails = {
-        id: timestamp?.toString(),
-        taskTitle,
-        taskDescription,
-        taskCreationDate: `${date.getDate()}/${date.getMonth()}`,
-        taskStatus: selectedTaskStatus,
-      };
-      let previousTasks: TaskDetails[] = JSON.parse(
-        AsyncStorage.getString(AsyncStorageKeys.TASKS) ?? ('[]' as string),
-      );
+    setIsAddTaskLoading(true);
+    try {
+      const {taskDetailsErrors, isErrorOccurred} = isValidTaskDetails({
+        title: taskTitle?.trim(),
+        description: taskDescription?.trim(),
+        taskStatus: selectedTaskStatus?.value?.trim(),
+      });
+      if (isErrorOccurred) {
+        setTaskDetailsError(taskDetailsErrors);
+      } else {
+        const date = new Date();
+        const timestamp = date.getUTCMilliseconds();
+        const newTaskDetails = {
+          id: timestamp?.toString(),
+          taskTitle,
+          taskDescription,
+          taskCreationDate: `${date.getDate()}/${date.getMonth()}`,
+          taskStatus: selectedTaskStatus,
+        };
+        let previousTasks: TaskDetails[] = JSON.parse(
+          AsyncStorage.getString(AsyncStorageKeys.TASKS) ?? ('[]' as string),
+        );
 
-      if (isEditTask) { //Update current Task Details
-        const modifiedTasks = previousTasks.map((task: TaskDetails) => {
-          if (task.id === taskDetails.id) {
-            return newTaskDetails;
-          }
-          return task;
-        });
-        AsyncStorage.set(AsyncStorageKeys.TASKS, JSON.stringify(modifiedTasks));
-      } else { //Add new task details.
-        previousTasks = [taskDetails, ...previousTasks];
-        AsyncStorage.set(AsyncStorageKeys.TASKS, JSON.stringify(previousTasks));
+        if (isEditTask) {
+          //Update current Task Details
+          const modifiedTasks = previousTasks.map((task: TaskDetails) => {
+            if (task.id === taskDetails.id) {
+              return newTaskDetails;
+            }
+            return task;
+          });
+          AsyncStorage.set(
+            AsyncStorageKeys.TASKS,
+            JSON.stringify(modifiedTasks),
+          );
+        } else {
+          //Add new task details.
+          const modifiedTasks = [newTaskDetails, ...previousTasks];
+          AsyncStorage.set(
+            AsyncStorageKeys.TASKS,
+            JSON.stringify(modifiedTasks),
+          );
+        }
+        setTimeout(() => {
+          navigation?.goBack();
+        }, 1000);
       }
-      navigation?.goBack();
+    } catch (e: any) {
+    } finally {
+      setIsAddTaskLoading(false);
     }
-  }, [taskTitle, taskDescription, selectedTaskStatus]);
+  }, [taskTitle, taskDescription, selectedTaskStatus, setIsAddTaskLoading]);
   const handleOnPressMainContainer = useCallback(() => {
     Keyboard?.dismiss();
   }, []);
@@ -157,11 +176,16 @@ const TaskCreation = (props: TaskCreationProps) => {
         </View>
         <View style={TaskCreationStyles.TaskCreationFooterContainer}>
           <TouchableOpacity
+            disabled={isAddTaskLoading}
             style={TaskCreationStyles.SaveTaskButtonContainer}
             onPress={handleOnPressSaveTaskDetails}>
-            <Text style={TaskCreationStyles.SaveTaskButtonText}>
-              {isEditTask ? 'Update Task' : 'Save Task'}
-            </Text>
+            {isAddTaskLoading ? (
+              <ActivityIndicator size={20} color={Colors.black}/>
+            ) : (
+              <Text style={TaskCreationStyles.SaveTaskButtonText}>
+                {isEditTask ? 'Update Task' : 'Save Task'}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
