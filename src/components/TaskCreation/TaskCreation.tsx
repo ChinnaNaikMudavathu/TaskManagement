@@ -7,7 +7,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {AsyncStorage, AsyncStorageKeys} from '../../AsyncStorage';
+import {
+  AsyncStorageKeys,
+  getAsyncStorageData,
+  storeAsyncStorageData,
+} from '../../AsyncStorage';
 import Colors from '../../Constants/Colors';
 import {TaskStatus} from '../../Models/Common.Models';
 
@@ -60,7 +64,7 @@ const TaskCreation = (props: TaskCreationProps) => {
           taskStatus: selectedTaskStatus,
         };
         let previousTasks: TaskDetails[] = JSON.parse(
-          AsyncStorage.getString(AsyncStorageKeys.TASKS) ?? ('[]' as string),
+          getAsyncStorageData(AsyncStorageKeys.TASKS) ?? ('[]' as string),
         );
 
         if (isEditTask) {
@@ -71,17 +75,11 @@ const TaskCreation = (props: TaskCreationProps) => {
             }
             return task;
           });
-          AsyncStorage.set(
-            AsyncStorageKeys.TASKS,
-            JSON.stringify(modifiedTasks),
-          );
+          storeAsyncStorageData(AsyncStorageKeys.TASKS, modifiedTasks);
         } else {
           //Add new task details.
           const modifiedTasks = [newTaskDetails, ...previousTasks];
-          AsyncStorage.set(
-            AsyncStorageKeys.TASKS,
-            JSON.stringify(modifiedTasks),
-          );
+          storeAsyncStorageData(AsyncStorageKeys.TASKS, modifiedTasks);
         }
         setTimeout(() => {
           navigation?.goBack();
@@ -180,7 +178,7 @@ const TaskCreation = (props: TaskCreationProps) => {
             style={TaskCreationStyles.SaveTaskButtonContainer}
             onPress={handleOnPressSaveTaskDetails}>
             {isAddTaskLoading ? (
-              <ActivityIndicator size={20} color={Colors.black}/>
+              <ActivityIndicator size={20} color={Colors.black} />
             ) : (
               <Text style={TaskCreationStyles.SaveTaskButtonText}>
                 {isEditTask ? 'Update Task' : 'Save Task'}

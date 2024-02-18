@@ -14,10 +14,9 @@ import TaskCard from '../TaskCard';
 import {TasksListProps} from '../../Models/TasksList.Models';
 
 import TasksListStyles from './TasksList.styles';
-import {TASK_STATUS, TASK_STATUS_LABEL} from '../../Constants/App';
 import NavigationScreens from '../../Constants/NavigationScreens';
 import {TaskDetails} from '../../Models/TaskCreation.Models';
-import {AsyncStorage, AsyncStorageKeys} from '../../AsyncStorage';
+import { AsyncStorageKeys, getAsyncStorageData, storeAsyncStorageData} from '../../AsyncStorage';
 import {useFocusEffect} from '@react-navigation/native';
 
 
@@ -31,7 +30,7 @@ const TasksList = (props: TasksListProps) => {
   const fetchTasks = useCallback(() => {
     setIsTasksLoading(true);
     try {
-      const availableTasks = AsyncStorage.getString(AsyncStorageKeys.TASKS);
+      const availableTasks = getAsyncStorageData(AsyncStorageKeys.TASKS);
       if (availableTasks) {
         setTasks(JSON.parse(availableTasks));
       }
@@ -60,10 +59,10 @@ const TasksList = (props: TasksListProps) => {
           text: 'Yes',
           onPress: () => {
             let modifiedTasks: TaskDetails[] = JSON.parse(
-              AsyncStorage.getString(AsyncStorageKeys.TASKS) ?? ('[]' as string),
+              getAsyncStorageData(AsyncStorageKeys.TASKS) ?? ('[]' as string),
             );
             modifiedTasks = modifiedTasks.filter((task) => task.id !== taskDetails.id);
-            AsyncStorage.set(AsyncStorageKeys.TASKS, JSON.stringify(modifiedTasks));
+            storeAsyncStorageData(AsyncStorageKeys.TASKS, modifiedTasks)
             fetchTasks();
             if (!isSwipeDelete) {
               navigation.goBack();
