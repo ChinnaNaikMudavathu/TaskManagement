@@ -1,5 +1,13 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Alert, Animated, FlatList, PanResponder, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  FlatList,
+  PanResponder,
+  Text,
+  View,
+} from 'react-native';
 
 import TaskCard from '../TaskCard';
 
@@ -9,6 +17,7 @@ import TasksListStyles from './TasksList.styles';
 import {TASK_STATUS, TASK_STATUS_LABEL} from '../../Constants/App';
 import NavigationScreens from '../../Constants/NavigationScreens';
 import {TaskDetails} from '../../Models/TaskCreation.Models';
+import {AsyncStorage, AsyncStorageKeys} from '../../AsyncStorage';
 
 const DUMMY_TASKS = [
   {
@@ -258,8 +267,24 @@ const TasksList = (props: TasksListProps) => {
   const [tasks, setTasks] = useState([]);
   const AnimatedValue = useRef(new Animated.Value(0)).current;
   const [currentSwipingTaskId, setCurrentSwipingTaskId] = useState('');
+  const [isTasksLoading, setIsTasksLoading] = useState(false);
+
+  const fetchTasks = useCallback(() => {
+    setIsTasksLoading(true);
+    try {
+      const availableTasks = AsyncStorage.getString(AsyncStorageKeys.TASKS);
+      if (availableTasks) {
+        setTasks(JSON.parse(availableTasks));
+      }
+    } catch (e: any) {
+      console.log('Error occurred while fetching the tasks', JSON.stringify(e));
+    } finally {
+      setIsTasksLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    setTasks(DUMMY_TASKS);
+    fetchTasks();
   }, []);
 
   const handleOnDeleteTask = useCallback(
@@ -316,45 +341,67 @@ const TasksList = (props: TasksListProps) => {
         Animated.timing(AnimatedValue, {
           toValue: 0,
           duration: 300,
-          useNativeDriver: true
+          useNativeDriver: true,
         }).start();
       },
     });
   };
 
-  const renderTask = ({item}: {item: TaskDetails; index: number}) => {
-    const {id, TaskTitle, TaskDescription, TaskStatus, TaskCreationDate} =
-      item || {};
+  const renderTask = useCallback(
+    ({item}: {item: TaskDetails; index: number}) => {
+      const {id, TaskTitle, TaskDescription, TaskStatus, TaskCreationDate} =
+        item || {};
+      return (
+        <Animated.View
+          {...panResponder(item).panHandlers}
+          key={id}
+          style={[
+            TasksListStyles.TasksCardWrapper,
+            {
+              ...(currentSwipingTaskId === id
+                ? {transform: [{translateX: AnimatedValue}]}
+                : {}),
+            },
+          ]}>
+          <TaskCard
+            TaskTitle={TaskTitle}
+            TaskDescription={TaskDescription}
+            TaskStatus={TaskStatus}
+            TaskCreationDate={TaskCreationDate}
+            handleOnPressTask={() => handleOnPressTask(item)}
+          />
+        </Animated.View>
+      );
+    },
+    [currentSwipingTaskId],
+  );
+
+  const renderEmptyTasksMessage = useCallback(() => {
     return (
-      <Animated.View
-        {...panResponder(item).panHandlers}
-        key={id}
-        style={[
-          TasksListStyles.TasksCardWrapper,
-          {
-            ...(currentSwipingTaskId === id
-              ? {transform: [{translateX: AnimatedValue}]}
-              : {}),
-          },
-        ]}>
-        <TaskCard
-          TaskTitle={TaskTitle}
-          TaskDescription={TaskDescription}
-          TaskStatus={TaskStatus}
-          TaskCreationDate={TaskCreationDate}
-          handleOnPressTask={() => handleOnPressTask(item)}
-        />
-      </Animated.View>
+      <Text style={TasksListStyles.EmptyTasksText}>
+        No data fount. You can create tasks on click of Create Task button on
+        top right of the screen.
+      </Text>
     );
-  };
-  return (
-    <View style={TasksListStyles.TaskListContainer}>
+  }, []);
+
+  const renderTasks = useCallback(() => {
+    if (!tasks?.length) {
+      return renderEmptyTasksMessage();
+    }
+    return (
       <FlatList
         data={tasks}
         extraData={tasks}
         keyExtractor={item => item?.id}
         renderItem={renderTask}
       />
+    );
+  }, [tasks]);
+
+  return (
+    <View style={TasksListStyles.TaskListContainer}>
+      {isTasksLoading ? <ActivityIndicator size={50}/> : renderTasks()}
     </View>
   );
 };

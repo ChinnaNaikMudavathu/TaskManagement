@@ -9,7 +9,6 @@ import TasksDashBoardStyles from './TasksDashBoard.styles';
 
 const TasksDashBoard = (props: DashBoardProps) => {
   const {navigation} = props || {};
-
   return (
     <View style={TasksDashBoardStyles.TasksDashBoardContainer}>
       <Timer />
