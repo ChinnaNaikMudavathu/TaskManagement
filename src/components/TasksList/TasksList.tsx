@@ -16,9 +16,13 @@ import {TasksListProps} from '../../Models/TasksList.Models';
 import TasksListStyles from './TasksList.styles';
 import NavigationScreens from '../../Constants/NavigationScreens';
 import {TaskDetails} from '../../Models/TaskCreation.Models';
-import { AsyncStorageKeys, getAsyncStorageData, storeAsyncStorageData} from '../../AsyncStorage';
+import {
+  AsyncStorageKeys,
+  getAsyncStorageData,
+  storeAsyncStorageData,
+} from '../../AsyncStorage';
 import {useFocusEffect} from '@react-navigation/native';
-
+import {showToast} from '../../Utils';
 
 const TasksList = (props: TasksListProps) => {
   const {navigation} = props || {};
@@ -61,9 +65,12 @@ const TasksList = (props: TasksListProps) => {
             let modifiedTasks: TaskDetails[] = JSON.parse(
               getAsyncStorageData(AsyncStorageKeys.TASKS) ?? ('[]' as string),
             );
-            modifiedTasks = modifiedTasks.filter((task) => task.id !== taskDetails.id);
-            storeAsyncStorageData(AsyncStorageKeys.TASKS, modifiedTasks)
+            modifiedTasks = modifiedTasks.filter(
+              task => task.id !== taskDetails.id,
+            );
+            storeAsyncStorageData(AsyncStorageKeys.TASKS, modifiedTasks);
             fetchTasks();
+            showToast('Task successfully deleted.');
             if (!isSwipeDelete) {
               navigation.goBack();
             }

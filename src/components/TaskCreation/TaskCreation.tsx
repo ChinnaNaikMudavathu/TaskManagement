@@ -21,7 +21,7 @@ import {
   TaskDetails,
 } from '../../Models/TaskCreation.Models';
 import {CreateTaskInputProps} from '../../Models/Utils.Models';
-import {isValidTaskDetails} from '../../Utils';
+import {isValidTaskDetails, showToast} from '../../Utils';
 import CreateTaskInput from './CreateTaskInput';
 
 import TaskCreationStyles from './TaskCreation.styles';
@@ -81,9 +81,12 @@ const TaskCreation = (props: TaskCreationProps) => {
           const modifiedTasks = [newTaskDetails, ...previousTasks];
           storeAsyncStorageData(AsyncStorageKeys.TASKS, modifiedTasks);
         }
-        setTimeout(() => {
-          navigation?.goBack();
-        }, 1000);
+        showToast(
+          isEditTask
+            ? 'Task successfully updated.'
+            : 'Task successfully created.',
+        );
+        navigation?.goBack();
       }
     } catch (e: any) {
     } finally {

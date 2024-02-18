@@ -1,3 +1,4 @@
+import { ToastAndroid } from 'react-native';
 import {TASK_STATUS} from './Constants/App';
 import Colors from './Constants/Colors';
 
@@ -55,4 +56,10 @@ export const isValidTaskDetails = (taskDetails: CreateTaskInputProps) => {
     isErrorOccurred = true;
   }
   return {taskDetailsErrors, isErrorOccurred};
+};
+
+export const showToast = (message = '') => {
+  if(message?.length) {
+    ToastAndroid.show(message, ToastAndroid.SHORT);
+  }
 };
