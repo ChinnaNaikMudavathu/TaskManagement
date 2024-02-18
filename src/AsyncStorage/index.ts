@@ -20,10 +20,10 @@ export const getAsyncStorageData = (key: string) => {
     try {
       if (key) {
         const localStorageData = AsyncStorage.getString(key);
-        return localStorageData
+        return JSON.parse(localStorageData ?? '[]' as string)
       }
     } catch (e: any) {
       console.log('Error while fetching data from local storage', JSON.parse(e));
-      return ''
+      return []
     }
   };

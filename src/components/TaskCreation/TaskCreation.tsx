@@ -63,13 +63,15 @@ const TaskCreation = (props: TaskCreationProps) => {
           taskCreationDate: `${date.getDate()}/${date.getMonth()}`,
           taskStatus: selectedTaskStatus,
         };
-        let previousTasks: TaskDetails[] = JSON.parse(
-          getAsyncStorageData(AsyncStorageKeys.TASKS) ?? ('[]' as string),
+        let previousTasks: TaskDetails[] = getAsyncStorageData(
+          AsyncStorageKeys.TASKS,
         );
-
+        if (!previousTasks?.length) {
+          previousTasks = [];
+        }
         if (isEditTask) {
           //Update current Task Details
-          const modifiedTasks = previousTasks.map((task: TaskDetails) => {
+          const modifiedTasks = previousTasks?.map((task: TaskDetails) => {
             if (task.id === taskDetails.id) {
               return newTaskDetails;
             }
@@ -78,7 +80,7 @@ const TaskCreation = (props: TaskCreationProps) => {
           storeAsyncStorageData(AsyncStorageKeys.TASKS, modifiedTasks);
         } else {
           //Add new task details.
-          const modifiedTasks = [newTaskDetails, ...previousTasks];
+          const modifiedTasks = [newTaskDetails, ...(previousTasks ?? [])];
           storeAsyncStorageData(AsyncStorageKeys.TASKS, modifiedTasks);
         }
         showToast(
@@ -89,6 +91,7 @@ const TaskCreation = (props: TaskCreationProps) => {
         navigation?.goBack();
       }
     } catch (e: any) {
+      console.log('Error occurred while adding task:', JSON.parse(e));
     } finally {
       setIsAddTaskLoading(false);
     }
