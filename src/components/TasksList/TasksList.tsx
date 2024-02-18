@@ -26,24 +26,34 @@ import {showToast} from '../../Utils';
 
 const TasksList = (props: TasksListProps) => {
   const {navigation} = props || {};
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<TaskDetails[]>([]);
   const AnimatedValue = useRef(new Animated.Value(0)).current;
   const [currentSwipingTaskId, setCurrentSwipingTaskId] = useState('');
   const [isTasksLoading, setIsTasksLoading] = useState(false);
 
-  const fetchTasks = useCallback(() => {
-    setIsTasksLoading(true);
-    try {
-      const availableTasks = getAsyncStorageData(AsyncStorageKeys.TASKS);
-      if (availableTasks) {
-        setTasks(JSON.parse(availableTasks));
+  const fetchTasks = useCallback(
+    () => {
+      setIsTasksLoading(true);
+      try {
+        const availableTasks: TaskDetails[] = getAsyncStorageData(
+          AsyncStorageKeys.TASKS,
+        );
+        if (availableTasks) {
+          setTasks(availableTasks);
+        }else{
+          setTasks([]);
+        }
+      } catch (e: any) {
+        console.log(
+          'Error occurred while fetching the tasks',
+          JSON.stringify(e),
+        );
+      } finally {
+        setIsTasksLoading(false);
       }
-    } catch (e: any) {
-      console.log('Error occurred while fetching the tasks', JSON.stringify(e));
-    } finally {
-      setIsTasksLoading(false);
-    }
-  }, [setIsTasksLoading]);
+    },
+    [setIsTasksLoading],
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -62,8 +72,8 @@ const TasksList = (props: TasksListProps) => {
         {
           text: 'Yes',
           onPress: () => {
-            let modifiedTasks: TaskDetails[] = JSON.parse(
-              getAsyncStorageData(AsyncStorageKeys.TASKS) ?? ('[]' as string),
+            let modifiedTasks: TaskDetails[] = getAsyncStorageData(
+              AsyncStorageKeys.TASKS,
             );
             modifiedTasks = modifiedTasks.filter(
               task => task.id !== taskDetails.id,
