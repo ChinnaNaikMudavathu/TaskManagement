@@ -14,7 +14,8 @@ const Timer = (props: TimerProps) => {
   const startTimer = useCallback(() => {
     timerRef.current = setInterval(() => {
       var today = new Date();
-      setTimer(today.toLocaleString());
+      const timerValue = `${today?.getHours()}-${today?.getMinutes()}-${today?.getSeconds()} ${today?.getDate()}-${today?.getMonth()}-${today?.getFullYear()}`
+      setTimer(timerValue || '');
     }, 1000);
   }, []);
 
