@@ -6,7 +6,8 @@ import {CreateTaskInputProps} from '../../../Models/CreateTaskInput.Models';
 import CreateTaskInputStyles from './CreateTaskInput.styles';
 
 const CreateTaskInput = (props: CreateTaskInputProps) => {
-  const {textInputProps, inputLabel, containerStyle, inputRef} = props || {};
+  const {textInputProps, inputLabel, containerStyle, inputRef, inputError} =
+    props || {};
   return (
     <View style={containerStyle}>
       <Text style={CreateTaskInputStyles.CreateTaskInputLabel}>
@@ -17,6 +18,11 @@ const CreateTaskInput = (props: CreateTaskInputProps) => {
         {...textInputProps}
         style={CreateTaskInputStyles.CreateTaskInputContainer}
       />
+      {inputError?.length ? (
+        <Text style={CreateTaskInputStyles.InputErrorMessage}>
+          {inputError}
+        </Text>
+      ) : null}
     </View>
   );
 };

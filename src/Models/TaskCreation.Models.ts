@@ -3,10 +3,10 @@ import {NavigationProps, TaskStatus} from './Common.Models';
 
 export interface TaskDetails {
   id: string;
-  TaskTitle: string;
-  TaskDescription: string;
-  TaskStatus: TaskStatus;
-  TaskCreationDate: string;
+  taskTitle: string;
+  taskDescription: string;
+  taskStatus: TaskStatus;
+  taskCreationDate: string;
 }
 interface TaskCreationRouteParams {
   isEditTask?: boolean;

@@ -52,6 +52,7 @@ const TaskCreationStyles = StyleSheet.create({
       fontSize: isSelected ? 16 : 12,
       fontWeight: '600',
   }),
+  InputErrorMessage: {color: Colors.red, fontSize: 16, marginVertical: 6},
 });
 
 export default TaskCreationStyles;

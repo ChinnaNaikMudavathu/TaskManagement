@@ -6,25 +6,25 @@ import {TaskCardProps} from '../../Models/TaskCard.Models';
 import TaskCardStyles from './TaskCard.styles';
 
 const TaskCard = (props: TaskCardProps) => {
-  const {TaskTitle, TaskDescription, TaskStatus, TaskCreationDate, handleOnPressTask} =
+  const {taskTitle, taskDescription, taskStatus, taskCreationDate, handleOnPressTask} =
     props || {};
   return (
     <TouchableOpacity onPress={handleOnPressTask} style={TaskCardStyles.TaskCardContainer}>
       <View style={TaskCardStyles.TaskCardContentContainer}>
-        <View style={TaskCardStyles.TaskCardCreationDate(TaskStatus.value)}>
+        <View style={TaskCardStyles.TaskCardCreationDate(taskStatus?.value)}>
           <Text style={TaskCardStyles.TaskCardCreationText}>
-            {TaskCreationDate}
+            {taskCreationDate}
           </Text>
         </View>
         <View style={TaskCardStyles.TaskCardInfoContainer}>
           <Text numberOfLines={2} style={TaskCardStyles.TaskCardTitle}>
-            {TaskTitle}
+            {taskTitle}
           </Text>
           <Text numberOfLines={4} style={TaskCardStyles.TaskCardDescription}>
-            {TaskDescription}
+            {taskDescription}
           </Text>
-          <Text style={TaskCardStyles.TaskCardTaskStatus(TaskStatus.value)}>
-            {TaskStatus.label}
+          <Text style={TaskCardStyles.TaskCardTaskStatus(taskStatus?.value)}>
+            {taskStatus?.label}
           </Text>
         </View>
       </View>

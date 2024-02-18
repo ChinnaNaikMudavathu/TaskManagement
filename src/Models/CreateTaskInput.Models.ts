@@ -4,5 +4,6 @@ export interface CreateTaskInputProps {
     inputLabel?: string,
     textInputProps?: TextInputProps,
     containerStyle?: ViewStyle;
-    inputRef?: any
+    inputRef?: any;
+    inputError?: string;
 }

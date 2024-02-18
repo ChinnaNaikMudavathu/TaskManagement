@@ -15,6 +15,7 @@ const CreateTaskInputStyles = StyleSheet.create({
     textAlignVertical: 'top',
     padding: 12,
   },
+  InputErrorMessage: {color: Colors.red, fontSize: 16, marginVertical: 6},
 });
 
 export default CreateTaskInputStyles;
