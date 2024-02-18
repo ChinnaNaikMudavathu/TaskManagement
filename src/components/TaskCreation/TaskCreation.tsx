@@ -60,7 +60,7 @@ const TaskCreation = (props: TaskCreationProps) => {
           id: timestamp?.toString(),
           taskTitle,
           taskDescription,
-          taskCreationDate: `${date.getDate()}/${date.getMonth()}`,
+          taskCreationDate: `${date.getDate()}/${date.getMonth() + 1}`,
           taskStatus: selectedTaskStatus,
         };
         let previousTasks: TaskDetails[] = getAsyncStorageData(
