@@ -17,3 +17,5 @@ export enum TASK_STATUS_LABEL {
     Close = "Close",
     Complete = "Complete",
 }
+
+export const NUMBER_OF_ITEMS_PER_BATCH = 10;

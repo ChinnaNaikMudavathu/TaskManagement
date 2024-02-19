@@ -23,6 +23,7 @@ import {
 } from '../../AsyncStorage';
 import {useFocusEffect} from '@react-navigation/native';
 import {showToast} from '../../Utils';
+import { NUMBER_OF_ITEMS_PER_BATCH } from '../../Constants/App';
 
 const TasksList = (props: TasksListProps) => {
   const {navigation} = props || {};
@@ -177,6 +178,8 @@ const TasksList = (props: TasksListProps) => {
       <FlatList
         data={tasks}
         extraData={tasks}
+        initialNumToRender={NUMBER_OF_ITEMS_PER_BATCH}
+        maxToRenderPerBatch={NUMBER_OF_ITEMS_PER_BATCH}
         keyExtractor={item => item?.id}
         renderItem={renderTask}
       />
