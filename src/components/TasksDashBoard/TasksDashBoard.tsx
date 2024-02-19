@@ -1,7 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
 
-import {DashBoardProps} from '../../Models/TasksDashBoard.Models';
+import {DashBoardProps} from '../../shared/Models/TasksDashBoard.Models';
 import TasksList from '../TasksList';
 import Timer from '../Timer/Timer';
 

@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,19 +11,19 @@ import {
 
 import TaskCard from '../TaskCard';
 
-import {TasksListProps} from '../../Models/TasksList.Models';
+import {TasksListProps} from '../../shared/Models/TasksList.Models';
 
 import TasksListStyles from './TasksList.styles';
-import NavigationScreens from '../../Constants/NavigationScreens';
-import {TaskDetails} from '../../Models/TaskCreation.Models';
+import NavigationScreens from '../../shared/Constants/NavigationScreens';
+import {TaskDetails} from '../../shared/Models/TaskCreation.Models';
 import {
   AsyncStorageKeys,
   getAsyncStorageData,
   storeAsyncStorageData,
 } from '../../AsyncStorage';
 import {useFocusEffect} from '@react-navigation/native';
-import {showToast} from '../../Utils';
-import { NUMBER_OF_ITEMS_PER_BATCH } from '../../Constants/App';
+import {showToast} from '../../shared/Utils';
+import {NUMBER_OF_ITEMS_PER_BATCH} from '../../shared/Constants/App';
 
 const TasksList = (props: TasksListProps) => {
   const {navigation} = props || {};
@@ -31,30 +31,75 @@ const TasksList = (props: TasksListProps) => {
   const AnimatedValue = useRef(new Animated.Value(0)).current;
   const [currentSwipingTaskId, setCurrentSwipingTaskId] = useState('');
   const [isTasksLoading, setIsTasksLoading] = useState(false);
+  const isShowSwipeToDeleteTaskAnimation = useRef(false);
 
-  const fetchTasks = useCallback(
-    () => {
-      setIsTasksLoading(true);
-      try {
-        const availableTasks: TaskDetails[] = getAsyncStorageData(
-          AsyncStorageKeys.TASKS,
-        );
-        if (availableTasks) {
-          setTasks(availableTasks);
-        }else{
-          setTasks([]);
-        }
-      } catch (e: any) {
-        console.log(
-          'Error occurred while fetching the tasks',
-          JSON.stringify(e),
-        );
-      } finally {
-        setIsTasksLoading(false);
+  const fetchTasks = useCallback(() => {
+    setIsTasksLoading(true);
+    try {
+      const availableTasks: TaskDetails[] = getAsyncStorageData(
+        AsyncStorageKeys.TASKS,
+      );
+      if (availableTasks) {
+        setTasks(availableTasks);
+      } else {
+        setTasks([]);
       }
-    },
-    [setIsTasksLoading],
-  );
+    } catch (e: any) {
+      console.log('Error occurred while fetching the tasks', JSON.stringify(e));
+    } finally {
+      setIsTasksLoading(false);
+    }
+  }, [setIsTasksLoading]);
+
+  const showSwipeToDeleteTaskAnimation = useCallback(() => {
+    try{
+      Animated.timing(AnimatedValue, {
+        toValue: 150,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        Animated.timing(AnimatedValue, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start(() => {
+          storeAsyncStorageData(
+            AsyncStorageKeys.IS_USER_AWARE_OF_SWIPE_TO_DELETE_TASK,
+            true,
+          );
+          setCurrentSwipingTaskId('');
+          isShowSwipeToDeleteTaskAnimation.current = false;
+        });
+      });
+    }catch(e: any){
+      console.log("Error occurred while show swipe to delete animation", JSON.parse(e));
+    }
+  } ,[AnimatedValue, setCurrentSwipingTaskId])
+
+  const isShowAnimationForSwipeRightToDeleteTask = useCallback(() => {
+    try {
+      const isUserSwipeToDeleteFeatureSeen = getAsyncStorageData(
+        AsyncStorageKeys.IS_USER_AWARE_OF_SWIPE_TO_DELETE_TASK,
+      );
+      if (!isUserSwipeToDeleteFeatureSeen) {
+        isShowSwipeToDeleteTaskAnimation.current = true;
+        setCurrentSwipingTaskId(tasks[0]?.id ?? '');
+      }
+    } catch (e: any) {
+      console.log('Error while fetching swipe to delete flag', JSON.parse(e));
+    }
+  }, [AnimatedValue, getAsyncStorageData, tasks]);
+
+  useEffect(() => {
+    if (tasks?.length && !currentSwipingTaskId?.length) {
+      setTimeout(() => {
+        isShowAnimationForSwipeRightToDeleteTask();
+      }, 1000);
+    }
+    if(tasks?.length && isShowSwipeToDeleteTaskAnimation.current && currentSwipingTaskId?.length){ //Show swipe to delete user only once to make awareness of swipe to delete task.
+      showSwipeToDeleteTaskAnimation();
+    }
+  }, [tasks, currentSwipingTaskId]);
 
   useFocusEffect(
     useCallback(() => {

@@ -12,16 +12,16 @@ import {
   getAsyncStorageData,
   storeAsyncStorageData,
 } from '../../AsyncStorage';
-import Colors from '../../Constants/Colors';
-import {TaskStatus} from '../../Models/Common.Models';
+import Colors from '../../shared/Constants/Colors';
+import {TaskStatus} from '../../shared/Models/Common.Models';
 
 import {
   AVAILABLE_TASKS_STATUS,
   TaskCreationProps,
   TaskDetails,
-} from '../../Models/TaskCreation.Models';
-import {CreateTaskInputProps} from '../../Models/Utils.Models';
-import {isValidTaskDetails, showToast} from '../../Utils';
+} from '../../shared/Models/TaskCreation.Models';
+import {CreateTaskInputProps} from '../../shared/Models/Utils.Models';
+import {isValidTaskDetails, showToast} from '../../shared/Utils';
 import CreateTaskInput from './CreateTaskInput';
 
 import TaskCreationStyles from './TaskCreation.styles';

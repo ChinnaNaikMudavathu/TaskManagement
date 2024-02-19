@@ -1,7 +1,7 @@
 import React from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 
-import {TaskCardProps} from '../../Models/TaskCard.Models';
+import {TaskCardProps} from '../../shared/Models/TaskCard.Models';
 
 import TaskCardStyles from './TaskCard.styles';
 

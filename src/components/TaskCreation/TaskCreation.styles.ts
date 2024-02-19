@@ -1,6 +1,6 @@
 import {StyleSheet, TextStyle, ViewStyle} from 'react-native';
-import Colors from '../../Constants/Colors';
-import { getTaskStatusColor } from '../../Utils';
+import Colors from '../../shared/Constants/Colors';
+import { getTaskStatusColor } from '../../shared/Utils';
 
 const TaskCreationStyles = StyleSheet.create({
   TaskCreationContainer: {

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Text, TextInput, View} from 'react-native';
 
-import {CreateTaskInputProps} from '../../../Models/CreateTaskInput.Models';
+import {CreateTaskInputProps} from '../../../shared/Models/CreateTaskInput.Models';
 
 import CreateTaskInputStyles from './CreateTaskInput.styles';
 

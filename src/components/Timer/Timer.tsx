@@ -2,7 +2,7 @@ import {useIsFocused} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Text, View} from 'react-native';
 
-import {TimerProps} from '../../Models/Timer.Models';
+import {TimerProps} from '../../shared/Models/Timer.Models';
 
 import TimerStyle from './Timer.styles';
 

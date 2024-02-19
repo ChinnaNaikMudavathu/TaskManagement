@@ -9,7 +9,7 @@ import TaskCreation from '../components/TaskCreation';
 
 import {CreateIcon, DeleteIcon} from '../assets/Icons';
 
-import NavigationScreens from '../Constants/NavigationScreens';
+import NavigationScreens from '../shared/Constants/NavigationScreens';
 
 const MainStack = createNativeStackNavigator();
 
